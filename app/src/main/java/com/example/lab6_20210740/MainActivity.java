@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
         cardVehicles = findViewById(R.id.card_explore_tours);
         cardFuelRecords = findViewById(R.id.card_my_reservations);
         cardSummary = findViewById(R.id.card_chats);
-        btnLogout = findViewById(R.id.button);
+        btnLogout = findViewById(R.id.btn_logout);
         tvWelcomeMessage = findViewById(R.id.tv_welcome_message);
     }
 

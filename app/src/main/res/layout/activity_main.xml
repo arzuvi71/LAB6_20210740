@@ -234,7 +234,7 @@
                     </com.google.android.material.card.MaterialCardView>
 
                     <Button
-                        android:id="@+id/button"
+                        android:id="@+id/btn_logout"
                         android:layout_width="300dp"
                         android:backgroundTint="@color/black"
                         android:layout_height="wrap_content"
