@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="primary">#63B4A9</color>
+    <color name="gray">#9E9E9E</color>
+    <color name="light_gray">#F5F5F5</color>
+    <color name="dark_gray">#616161</color>
+    <color name="botones">#009688</color>
+    <color name="turista_color_luces">#FFEBE6</color>
+    <color name="guia_turista_color">#825252</color>
+    <color name="guia_turista_color_luces">#FFE3E3</color>
+</resources>
