@@ -33,9 +33,63 @@
     <string name="welcome_sub">Selecciona la actividad a realizar</string>
 
 
-    <!-- Menu principla-->
+    <!-- Menu principal-->
     <string name="mis_vehiculos">Mis Vehículos</string>
     <string name="registros">Registros</string>
     <string name="resumen">Resumen</string>
+
+    <!-- Vehículos -->
+    <string name="vehicle_id">ID del Vehículo</string>
+    <string name="vehicle_plate">Placa</string>
+    <string name="vehicle_brand">Marca</string>
+    <string name="vehicle_model">Modelo</string>
+    <string name="vehicle_year">Año de Fabricación</string>
+    <string name="technical_review_date">Fecha de Revisión Técnica</string>
+    <string name="add_vehicle">Agregar Vehículo</string>
+    <string name="no_vehicles">No hay vehículos registrados</string>
+    <string name="add_first_vehicle">Agrega tu primer vehículo</string>
+
+    <!-- Registros de Combustible -->
+    <string name="record_id">ID del Registro</string>
+    <string name="associated_vehicle">Vehículo Asociado</string>
+    <string name="date">Fecha</string>
+    <string name="liters_loaded">Litros Cargados</string>
+    <string name="current_kilometers">Kilometraje Actual</string>
+    <string name="total_price">Precio Total</string>
+    <string name="fuel_type">Tipo de Combustible</string>
+    <string name="add_fuel_record">Agregar Registro</string>
+    <string name="no_fuel_records">No hay registros de combustible</string>
+    <string name="add_first_record">Agrega tu primer registro</string>
+    <string name="select_vehicle">Seleccionar Vehículo</string>
+    <string name="select_fuel_type">Seleccionar Tipo</string>
+
+    <!-- Tipos de Combustible -->
+    <string name="gasoline">Gasolina</string>
+    <string name="glp">GLP</string>
+    <string name="gnv">GNV</string>
+
+    <!-- Resumen -->
+    <string name="liters_per_month">Litros Consumidos por Mes</string>
+    <string name="consumption_by_fuel_type">Consumo por Tipo de Combustible</string>
+    <string name="no_data_available">No hay datos disponibles</string>
+    <string name="add_records_to_see_charts">Agrega registros para ver gráficos</string>
+
+    <!-- Validaciones -->
+    <string name="field_required">Este campo es obligatorio</string>
+    <string name="invalid_year">Año inválido</string>
+    <string name="invalid_number">Número inválido</string>
+    <string name="vehicle_saved">Vehículo guardado exitosamente</string>
+    <string name="record_saved">Registro guardado exitosamente</string>
+
+    <!-- Technical Review -->
+    <string name="fecha_ultima_revision">Última Revisión Técnica</string>
+    <string name="placa">Placa</string>
+    <string name="marca_modelo">Revisión Técnica</string>
+    <string name="revision_tecnica">Revisión Técnica</string>
+    <string name="generar_qr">Generar QR</string>
+    <string name="qr_titulo">Código QR - Revisión Técnica</string>
+    <string name="info_vehiculo">Información del Vehículo</string>
+    <string name="qr_generado">Código QR generado exitosamente</string>
+    <string name="sin_kilometraje">No hay kilometraje registrado</string>
 
 </resources>

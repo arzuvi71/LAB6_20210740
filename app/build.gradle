@@ -1,5 +1,6 @@
 plugins {
-    alias(libs.plugins.android.application)
+    alias(libs.plugins.android.application)  // ← SOLO ESTA LÍNEA para Android Application
+    id('com.google.gms.google-services')
 }
 
 android {
@@ -29,20 +30,24 @@ android {
 }
 
 dependencies {
-
     implementation libs.appcompat
     implementation libs.material
     implementation libs.activity
     implementation libs.constraintlayout
+    implementation(platform("com.google.firebase:firebase-bom:34.5.0"))
+    implementation 'com.google.firebase:firebase-firestore'
+    implementation 'com.google.firebase:firebase-auth'
+    implementation 'com.firebaseui:firebase-ui-auth:8.0.2'
+
+    // Otras dependencias
+    implementation 'com.hbb20:ccp:2.7.3'
+    implementation 'com.google.android.material:material:1.10.0'
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
+    implementation 'com.google.zxing:core:3.5.2'
+    implementation 'com.journeyapps:zxing-android-embedded:4.3.0'
+
+    // Dependencias de testing
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core
-
-    dependencies {
-        implementation 'com.hbb20:ccp:2.7.3'
-    }
-    dependencies {
-        implementation 'com.google.android.material:material:1.10.0'
-    }
-
 }
