@@ -1,8 +1,10 @@
 package com.example.lab6_20210740;
 
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -25,6 +27,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
+//Mande este código al LLM (Chatgpt y Deepseek) con la pregunta: "Como puedo hacer para que el flujo de el inicio de sesión de google
+//se muestre en español",incluso con el resultado y sugerencia no pude modificarlo aunque lo force.
 public class LoginActivity extends AppCompatActivity {
 
     private TextInputEditText etEmail, etPassword;
@@ -38,14 +42,35 @@ public class LoginActivity extends AppCompatActivity {
     );
 
     @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(setLocale(base, "es"));
+    }
+
+    private static Context setLocale(Context context, String language) {
+        Locale locale = new Locale(language);
+        Locale.setDefault(locale);
+
+        Resources resources = context.getResources();
+        Configuration configuration = resources.getConfiguration();
+        configuration.setLocale(locale);
+
+        return context.createConfigurationContext(configuration);
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         // Configurar idioma español
-        setLocaleToSpanish();
+        Locale locale = new Locale("es");
+        Locale.setDefault(locale);
+        Configuration config = new Configuration();
+        config.setLocale(locale);
+        getResources().updateConfiguration(config, getResources().getDisplayMetrics());
 
         // Inicializar Firebase Auth
         auth = FirebaseAuth.getInstance();
+        auth.setLanguageCode("es");
 
         // Verificar si ya está autenticado
         FirebaseUser currentUser = auth.getCurrentUser();
@@ -129,14 +154,6 @@ public class LoginActivity extends AppCompatActivity {
     private void goToRegister() {
         Intent intent = new Intent(this, RegisterActivity.class);
         startActivity(intent);
-    }
-
-    private void setLocaleToSpanish() {
-        Locale locale = new Locale("es");
-        Locale.setDefault(locale);
-        Configuration config = new Configuration();
-        config.setLocale(locale);
-        getResources().updateConfiguration(config, getResources().getDisplayMetrics());
     }
 
     private void onSignInResult(FirebaseAuthUIAuthenticationResult result) {
