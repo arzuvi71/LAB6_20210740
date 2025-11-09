@@ -24,15 +24,22 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
 
-        // Verificacion  de autenticado
-        verifyAuthentication();
+        try {
+            setContentView(R.layout.activity_main);
 
-        initViews();
-        setupCardClicks();
-        setupLogoutButton();
-        updateWelcomeMessage();
+            // Verificacion  de autenticado
+            verifyAuthentication();
+
+            initViews();
+            setupCardClicks();
+            setupLogoutButton();
+            updateWelcomeMessage();
+        } catch (Exception e) {
+            android.util.Log.e("MainActivity", "Error en onCreate: " + e.getMessage());
+            e.printStackTrace();
+            Toast.makeText(this, "Error al cargar la aplicación: " + e.getMessage(), Toast.LENGTH_LONG).show();
+        }
     }
 
     private void verifyAuthentication() {
@@ -45,11 +52,23 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initViews() {
-        cardVehicles = findViewById(R.id.card_explore_tours);
-        cardFuelRecords = findViewById(R.id.card_my_reservations);
-        cardSummary = findViewById(R.id.card_chats);
-        btnLogout = findViewById(R.id.btn_logout);
-        tvWelcomeMessage = findViewById(R.id.tv_welcome_message);
+        try {
+            cardVehicles = findViewById(R.id.card_explore_tours);
+            cardFuelRecords = findViewById(R.id.card_my_reservations);
+            cardSummary = findViewById(R.id.card_chats);
+            btnLogout = findViewById(R.id.btn_logout);
+            tvWelcomeMessage = findViewById(R.id.tv_welcome_message);
+
+            // Verificar que todas las vistas se encontraron
+            if (cardVehicles == null || cardFuelRecords == null || cardSummary == null ||
+                btnLogout == null || tvWelcomeMessage == null) {
+                android.util.Log.e("MainActivity", "Error: Algunas vistas no se encontraron en el layout");
+                throw new RuntimeException("Error al inicializar las vistas");
+            }
+        } catch (Exception e) {
+            android.util.Log.e("MainActivity", "Error en initViews: " + e.getMessage());
+            throw e;
+        }
     }
 
     private void setupCardClicks() {
@@ -75,15 +94,30 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    // Mensjae debienvenida
+    // Mensaje de bienvenida
     private void updateWelcomeMessage() {
-        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        if (currentUser != null && currentUser.getDisplayName() != null) {
-            String welcomeMessage = "¡Hola, " + currentUser.getDisplayName() + "!";
-            tvWelcomeMessage.setText(welcomeMessage);
-        } else if (currentUser != null && currentUser.getEmail() != null) {
-            String welcomeMessage = "¡Hola, " + currentUser.getEmail() + "!";
-            tvWelcomeMessage.setText(welcomeMessage);
+        try {
+            FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+            if (currentUser != null) {
+                String welcomeMessage = "¡Hola!";
+
+                if (currentUser.getDisplayName() != null && !currentUser.getDisplayName().isEmpty()) {
+                    welcomeMessage = "¡Hola, " + currentUser.getDisplayName() + "!";
+                } else if (currentUser.getEmail() != null && !currentUser.getEmail().isEmpty()) {
+                    // Extraer el nombre del email
+                    String emailName = currentUser.getEmail().split("@")[0];
+                    welcomeMessage = "¡Hola, " + emailName + "!";
+                }
+
+                tvWelcomeMessage.setText(welcomeMessage);
+                android.util.Log.d("MainActivity", "Mensaje de bienvenida actualizado: " + welcomeMessage);
+            } else {
+                android.util.Log.e("MainActivity", "Usuario actual es null");
+                tvWelcomeMessage.setText("¡Hola!");
+            }
+        } catch (Exception e) {
+            android.util.Log.e("MainActivity", "Error al actualizar mensaje de bienvenida: " + e.getMessage());
+            tvWelcomeMessage.setText("¡Hola!");
         }
     }
 

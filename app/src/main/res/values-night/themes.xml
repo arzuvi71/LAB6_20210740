@@ -1,7 +1,26 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="Base.Theme.LAB6_20210740" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your dark theme here. -->
-        <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+        <!-- Colores principales de la app (modo oscuro) -->
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryVariant">@color/botones</item>
+        <item name="colorOnPrimary">@color/white</item>
+
+        <!-- Colores secundarios -->
+        <item name="colorSecondary">@color/primary</item>
+        <item name="colorSecondaryVariant">@color/botones</item>
+        <item name="colorOnSecondary">@color/white</item>
+
+        <!-- Colores de fondo (modo oscuro) -->
+        <item name="android:colorBackground">@color/dark_gray</item>
+        <item name="colorSurface">@color/gray</item>
+        <item name="colorOnSurface">@color/white</item>
+
+        <!-- Colores de error -->
+        <item name="colorError">#CF6679</item>
+        <item name="colorOnError">@color/black</item>
+
+        <!-- Estilo de botones -->
+        <item name="materialButtonStyle">@style/Widget.App.Button</item>
     </style>
 </resources>
