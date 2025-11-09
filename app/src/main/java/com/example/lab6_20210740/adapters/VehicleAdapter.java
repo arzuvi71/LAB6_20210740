@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.lab6_20210740.R;
 import com.example.lab6_20210740.models.Vehicle;
+import com.google.android.material.button.MaterialButton;
 
 import java.util.List;
 
@@ -18,9 +19,19 @@ public class VehicleAdapter extends RecyclerView.Adapter<VehicleAdapter.VehicleV
 
     private List<Vehicle> vehicles;
     private OnQRClickListener qrClickListener;
+    private OnEditClickListener editClickListener;
+    private OnDeleteClickListener deleteClickListener;
 
     public interface OnQRClickListener {
         void onQRClick(Vehicle vehicle);
+    }
+
+    public interface OnEditClickListener {
+        void onEditClick(Vehicle vehicle);
+    }
+
+    public interface OnDeleteClickListener {
+        void onDeleteClick(Vehicle vehicle);
     }
 
     public VehicleAdapter(List<Vehicle> vehicles) {
@@ -29,6 +40,14 @@ public class VehicleAdapter extends RecyclerView.Adapter<VehicleAdapter.VehicleV
 
     public void setOnQRClickListener(OnQRClickListener listener) {
         this.qrClickListener = listener;
+    }
+
+    public void setOnEditClickListener(OnEditClickListener listener) {
+        this.editClickListener = listener;
+    }
+
+    public void setOnDeleteClickListener(OnDeleteClickListener listener) {
+        this.deleteClickListener = listener;
     }
 
     @NonNull
@@ -51,6 +70,18 @@ public class VehicleAdapter extends RecyclerView.Adapter<VehicleAdapter.VehicleV
                 qrClickListener.onQRClick(vehicle);
             }
         });
+
+        holder.btnEditVehicle.setOnClickListener(v -> {
+            if (editClickListener != null) {
+                editClickListener.onEditClick(vehicle);
+            }
+        });
+
+        holder.btnDeleteVehicle.setOnClickListener(v -> {
+            if (deleteClickListener != null) {
+                deleteClickListener.onDeleteClick(vehicle);
+            }
+        });
     }
 
     @Override
@@ -64,6 +95,8 @@ public class VehicleAdapter extends RecyclerView.Adapter<VehicleAdapter.VehicleV
         TextView tvVehiclePlate;
         TextView tvTechnicalReview;
         Button btnGenerateQR;
+        MaterialButton btnEditVehicle;
+        MaterialButton btnDeleteVehicle;
 
         public VehicleViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -72,6 +105,8 @@ public class VehicleAdapter extends RecyclerView.Adapter<VehicleAdapter.VehicleV
             tvVehiclePlate = itemView.findViewById(R.id.tv_vehicle_plate);
             tvTechnicalReview = itemView.findViewById(R.id.tv_technical_review);
             btnGenerateQR = itemView.findViewById(R.id.btn_generate_qr);
+            btnEditVehicle = itemView.findViewById(R.id.btn_edit_vehicle);
+            btnDeleteVehicle = itemView.findViewById(R.id.btn_delete_vehicle);
         }
     }
 }

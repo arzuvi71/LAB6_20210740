@@ -10,15 +10,34 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.lab6_20210740.R;
 import com.example.lab6_20210740.models.FuelRecord;
+import com.google.android.material.button.MaterialButton;
 
 import java.util.List;
 
 public class FuelRecordAdapter extends RecyclerView.Adapter<FuelRecordAdapter.FuelRecordViewHolder> {
 
     private List<FuelRecord> fuelRecords;
+    private OnEditClickListener editClickListener;
+    private OnDeleteClickListener deleteClickListener;
+
+    public interface OnEditClickListener {
+        void onEditClick(FuelRecord record);
+    }
+
+    public interface OnDeleteClickListener {
+        void onDeleteClick(FuelRecord record);
+    }
 
     public FuelRecordAdapter(List<FuelRecord> fuelRecords) {
         this.fuelRecords = fuelRecords;
+    }
+
+    public void setOnEditClickListener(OnEditClickListener listener) {
+        this.editClickListener = listener;
+    }
+
+    public void setOnDeleteClickListener(OnDeleteClickListener listener) {
+        this.deleteClickListener = listener;
     }
 
     @NonNull
@@ -38,6 +57,18 @@ public class FuelRecordAdapter extends RecyclerView.Adapter<FuelRecordAdapter.Fu
         holder.tvKilometers.setText(String.format("%.0f km", record.getCurrentKilometers()));
         holder.tvPrice.setText(String.format("S/ %.2f", record.getTotalPrice()));
         holder.tvFuelType.setText(record.getFuelType());
+
+        holder.btnEditRecord.setOnClickListener(v -> {
+            if (editClickListener != null) {
+                editClickListener.onEditClick(record);
+            }
+        });
+
+        holder.btnDeleteRecord.setOnClickListener(v -> {
+            if (deleteClickListener != null) {
+                deleteClickListener.onDeleteClick(record);
+            }
+        });
     }
 
     @Override
@@ -53,6 +84,8 @@ public class FuelRecordAdapter extends RecyclerView.Adapter<FuelRecordAdapter.Fu
         TextView tvKilometers;
         TextView tvPrice;
         TextView tvFuelType;
+        MaterialButton btnEditRecord;
+        MaterialButton btnDeleteRecord;
 
         public FuelRecordViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -63,6 +96,8 @@ public class FuelRecordAdapter extends RecyclerView.Adapter<FuelRecordAdapter.Fu
             tvKilometers = itemView.findViewById(R.id.tv_kilometers);
             tvPrice = itemView.findViewById(R.id.tv_price);
             tvFuelType = itemView.findViewById(R.id.tv_fuel_type);
+            btnEditRecord = itemView.findViewById(R.id.btn_edit_record);
+            btnDeleteRecord = itemView.findViewById(R.id.btn_delete_record);
         }
     }
 }

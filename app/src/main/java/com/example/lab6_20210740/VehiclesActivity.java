@@ -70,11 +70,17 @@ public class VehiclesActivity extends AppCompatActivity {
     private void setupRecyclerView() {
         vehicleList = new ArrayList<>();
         vehicleAdapter = new VehicleAdapter(vehicleList);
+
         vehicleAdapter.setOnQRClickListener(vehicle -> {
             Intent intent = new Intent(VehiclesActivity.this, TechnicalReviewActivity.class);
             intent.putExtra(TechnicalReviewActivity.EXTRA_VEHICLE_ID, vehicle.getId());
             startActivity(intent);
         });
+
+        vehicleAdapter.setOnEditClickListener(vehicle -> showEditVehicleDialog(vehicle));
+
+        vehicleAdapter.setOnDeleteClickListener(vehicle -> showDeleteConfirmationDialog(vehicle));
+
         recyclerVehicles.setLayoutManager(new LinearLayoutManager(this));
         recyclerVehicles.setAdapter(vehicleAdapter);
     }
@@ -203,6 +209,115 @@ public class VehiclesActivity extends AppCompatActivity {
         return true;
     }
 
+    private void showEditVehicleDialog(Vehicle vehicle) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_add_vehicle, null);
+        builder.setView(dialogView);
+
+        AlertDialog dialog = builder.create();
+
+        TextInputEditText etVehicleId = dialogView.findViewById(R.id.et_vehicle_id);
+        TextInputEditText etVehiclePlate = dialogView.findViewById(R.id.et_vehicle_plate);
+        TextInputEditText etVehicleBrand = dialogView.findViewById(R.id.et_vehicle_brand);
+        TextInputEditText etVehicleModel = dialogView.findViewById(R.id.et_vehicle_model);
+        TextInputEditText etVehicleYear = dialogView.findViewById(R.id.et_vehicle_year);
+        TextInputEditText etTechnicalReviewDate = dialogView.findViewById(R.id.et_technical_review_date);
+        Button btnCancel = dialogView.findViewById(R.id.btn_cancel);
+        Button btnSave = dialogView.findViewById(R.id.btn_save);
+
+
+        etVehicleId.setText(vehicle.getId());
+        etVehicleId.setEnabled(false); // No permitir cambiar el ID
+        etVehiclePlate.setText(vehicle.getPlate());
+        etVehicleBrand.setText(vehicle.getBrand());
+        etVehicleModel.setText(vehicle.getModel());
+        etVehicleYear.setText(String.valueOf(vehicle.getYear()));
+        etTechnicalReviewDate.setText(vehicle.getTechnicalReviewDate());
+
+        // Date Picker para fecha de revisión técnica
+        etTechnicalReviewDate.setOnClickListener(v -> {
+            Calendar calendar = Calendar.getInstance();
+            int year = calendar.get(Calendar.YEAR);
+            int month = calendar.get(Calendar.MONTH);
+            int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+            DatePickerDialog datePickerDialog = new DatePickerDialog(
+                    VehiclesActivity.this,
+                    (view, selectedYear, selectedMonth, selectedDay) -> {
+                        String date = String.format("%02d/%02d/%d", selectedDay, selectedMonth + 1, selectedYear);
+                        etTechnicalReviewDate.setText(date);
+                    },
+                    year, month, day
+            );
+            datePickerDialog.show();
+        });
+
+        btnCancel.setOnClickListener(v -> dialog.dismiss());
+
+        btnSave.setOnClickListener(v -> {
+            String id = etVehicleId.getText().toString().trim();
+            String plate = etVehiclePlate.getText().toString().trim();
+            String brand = etVehicleBrand.getText().toString().trim();
+            String model = etVehicleModel.getText().toString().trim();
+            String yearStr = etVehicleYear.getText().toString().trim();
+            String reviewDate = etTechnicalReviewDate.getText().toString().trim();
+
+            if (validateVehicleData(id, plate, brand, model, yearStr, reviewDate)) {
+                int year = Integer.parseInt(yearStr);
+
+                // Actualizar vehículo
+                vehicle.setPlate(plate);
+                vehicle.setBrand(brand);
+                vehicle.setModel(model);
+                vehicle.setYear(year);
+                vehicle.setTechnicalReviewDate(reviewDate);
+
+                // Actualizar en Firestore
+                updateVehicleInFirestore(vehicle, dialog);
+            }
+        });
+
+        dialog.show();
+    }
+
+    private void updateVehicleInFirestore(Vehicle vehicle, AlertDialog dialog) {
+        db.collection("vehicles")
+                .document(vehicle.getId())
+                .set(vehicle)
+                .addOnSuccessListener(unused -> {
+                    loadVehiclesFromFirestore(); // Recargar la lista
+                    Toast.makeText(this, "Vehículo actualizado", Toast.LENGTH_SHORT).show();
+                    dialog.dismiss();
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("Firestore", "Error updating vehicle", e);
+                    Toast.makeText(this, "Error al actualizar vehículo", Toast.LENGTH_SHORT).show();
+                });
+    }
+
+    private void showDeleteConfirmationDialog(Vehicle vehicle) {
+        new AlertDialog.Builder(this)
+                .setTitle("Eliminar Vehículo")
+                .setMessage("¿Estás seguro de que deseas eliminar el vehículo " + vehicle.getId() + "?")
+                .setPositiveButton("Eliminar", (dialog, which) -> deleteVehicleFromFirestore(vehicle))
+                .setNegativeButton("Cancelar", null)
+                .show();
+    }
+
+    private void deleteVehicleFromFirestore(Vehicle vehicle) {
+        db.collection("vehicles")
+                .document(vehicle.getId())
+                .delete()
+                .addOnSuccessListener(unused -> {
+                    loadVehiclesFromFirestore();
+                    Toast.makeText(this, "Vehículo eliminado", Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("Firestore", "Error deleting vehicle", e);
+                    Toast.makeText(this, "Error al eliminar vehículo", Toast.LENGTH_SHORT).show();
+                });
+    }
+
     private void updateUI() {
         if (vehicleList.isEmpty()) {
             emptyState.setVisibility(View.VISIBLE);
@@ -216,7 +331,7 @@ public class VehiclesActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        // Recargar datos cuando la actividad se reanude
+        // Recargaar datos cuando la actividad se reanude
         loadVehiclesFromFirestore();
     }
 }
