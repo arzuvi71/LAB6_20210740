@@ -89,7 +89,7 @@
     <string name="generar_qr">Generar QR</string>
     <string name="qr_titulo">Código QR - Revisión Técnica</string>
     <string name="info_vehiculo">Información del Vehículo</string>
-    <string name="qr_generado">Código QR generado exitosamente</string>
+    <string name="qr_generado">Generar código QR</string>
     <string name="sin_kilometraje">No hay kilometraje registrado</string>
 
 </resources>

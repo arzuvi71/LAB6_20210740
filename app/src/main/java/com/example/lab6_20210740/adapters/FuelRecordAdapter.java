@@ -3,6 +3,7 @@ package com.example.lab6_20210740.adapters;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -10,7 +11,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.lab6_20210740.R;
 import com.example.lab6_20210740.models.FuelRecord;
-import com.google.android.material.button.MaterialButton;
 
 import java.util.List;
 
@@ -84,8 +84,8 @@ public class FuelRecordAdapter extends RecyclerView.Adapter<FuelRecordAdapter.Fu
         TextView tvKilometers;
         TextView tvPrice;
         TextView tvFuelType;
-        MaterialButton btnEditRecord;
-        MaterialButton btnDeleteRecord;
+        Button btnEditRecord;
+        Button btnDeleteRecord;
 
         public FuelRecordViewHolder(@NonNull View itemView) {
             super(itemView);

@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.lab6_20210740.R;
 import com.example.lab6_20210740.models.Vehicle;
-import com.google.android.material.button.MaterialButton;
 
 import java.util.List;
 
@@ -95,8 +94,8 @@ public class VehicleAdapter extends RecyclerView.Adapter<VehicleAdapter.VehicleV
         TextView tvVehiclePlate;
         TextView tvTechnicalReview;
         Button btnGenerateQR;
-        MaterialButton btnEditVehicle;
-        MaterialButton btnDeleteVehicle;
+        Button btnEditVehicle;
+        Button btnDeleteVehicle;
 
         public VehicleViewHolder(@NonNull View itemView) {
             super(itemView);

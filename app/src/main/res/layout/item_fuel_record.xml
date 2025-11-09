@@ -116,31 +116,32 @@
             </LinearLayout>
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:layout_marginTop="8dp">
 
-                <com.google.android.material.button.MaterialButton
+                <Button
                     android:id="@+id/btn_edit_record"
-                    style="@style/Widget.Material3.Button.IconButton"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    app:icon="@android:drawable/ic_menu_edit"
-                    app:iconTint="@color/primary"
-                    app:iconGravity="textStart"
-                    app:iconPadding="0dp" />
+                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Editar"
+                    android:textColor="@color/primary"
+                    app:strokeColor="@color/primary"
+                    android:layout_marginEnd="4dp" />
 
-                <com.google.android.material.button.MaterialButton
+                <Button
                     android:id="@+id/btn_delete_record"
-                    style="@style/Widget.Material3.Button.IconButton"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:layout_marginStart="4dp"
-                    app:icon="@android:drawable/ic_menu_delete"
-                    app:iconTint="#F44336"
-                    app:iconGravity="textStart"
-                    app:iconPadding="0dp" />
+                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Borrar"
+                    android:textColor="#F44336"
+                    app:strokeColor="#F44336"
+                    android:layout_marginStart="4dp" />
 
             </LinearLayout>
 

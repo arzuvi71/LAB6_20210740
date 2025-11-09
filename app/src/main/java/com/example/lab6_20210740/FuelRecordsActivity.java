@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -26,9 +27,11 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Random;
@@ -38,11 +41,18 @@ public class FuelRecordsActivity extends AppCompatActivity {
     private RecyclerView recyclerFuelRecords;
     private LinearLayout emptyState;
     private FloatingActionButton fabAddRecord;
+    private ImageButton btnFilter;
     private FuelRecordAdapter fuelRecordAdapter;
     private List<FuelRecord> fuelRecordList;
+    private List<FuelRecord> allFuelRecordList; // Lista completa sin filtrar
     private List<Vehicle> vehicleList;
     private FirebaseFirestore db;
     private FirebaseAuth auth;
+
+    // Variables de filtro
+    private String filterVehicleId = null;
+    private String filterStartDate = null;
+    private String filterEndDate = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,11 +75,14 @@ public class FuelRecordsActivity extends AppCompatActivity {
         recyclerFuelRecords = findViewById(R.id.recycler_fuel_records);
         emptyState = findViewById(R.id.empty_state);
         fabAddRecord = findViewById(R.id.fab_add_record);
+        btnFilter = findViewById(R.id.btn_filter);
     }
 
     private void setupToolbar() {
         MaterialToolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setNavigationOnClickListener(v -> finish());
+
+        btnFilter.setOnClickListener(v -> showFilterDialog());
     }
 
     private void setupRecyclerView() {
@@ -123,13 +136,12 @@ public class FuelRecordsActivity extends AppCompatActivity {
                 .whereEqualTo("userId", currentUserId)
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
-                    fuelRecordList.clear();
+                    allFuelRecordList = new ArrayList<>();
                     for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
                         FuelRecord record = document.toObject(FuelRecord.class);
-                        fuelRecordList.add(record);
+                        allFuelRecordList.add(record);
                     }
-                    fuelRecordAdapter.notifyDataSetChanged();
-                    updateUI();
+                    applyFilters();
                 })
                 .addOnFailureListener(e -> {
                     Log.e("Firestore", "Error loading fuel records", e);
@@ -406,6 +418,180 @@ public class FuelRecordsActivity extends AppCompatActivity {
                     Log.e("Firestore", "Error deleting fuel record", e);
                     Toast.makeText(this, "Error al eliminar registro", Toast.LENGTH_SHORT).show();
                 });
+    }
+
+    private void showFilterDialog() {
+        if (vehicleList == null || vehicleList.isEmpty()) {
+            Toast.makeText(this, "No hay vehículos para filtrar", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_filter_fuel_records, null);
+        builder.setView(dialogView);
+
+        AlertDialog dialog = builder.create();
+
+        AutoCompleteTextView spinnerVehicle = dialogView.findViewById(R.id.spinner_filter_vehicle);
+        TextInputEditText etStartDate = dialogView.findViewById(R.id.et_filter_start_date);
+        TextInputEditText etEndDate = dialogView.findViewById(R.id.et_filter_end_date);
+        Button btnClearFilters = dialogView.findViewById(R.id.btn_clear_filters);
+        Button btnCancel = dialogView.findViewById(R.id.btn_cancel_filter);
+        Button btnApply = dialogView.findViewById(R.id.btn_apply_filter);
+
+        // Filttar vehivulo
+        List<String> vehicleOptions = new ArrayList<>();
+        vehicleOptions.add("Todos los vehículos");
+        for (Vehicle vehicle : vehicleList) {
+            vehicleOptions.add(vehicle.toString());
+        }
+        ArrayAdapter<String> vehicleAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, vehicleOptions);
+        spinnerVehicle.setAdapter(vehicleAdapter);
+
+        if (filterVehicleId != null) {
+            for (Vehicle vehicle : vehicleList) {
+                if (vehicle.getId().equals(filterVehicleId)) {
+                    spinnerVehicle.setText(vehicle.toString(), false);
+                    break;
+                }
+            }
+        } else {
+            spinnerVehicle.setText("Todos los vehículos", false);
+        }
+
+        if (filterStartDate != null) {
+            etStartDate.setText(filterStartDate);
+        }
+
+        if (filterEndDate != null) {
+            etEndDate.setText(filterEndDate);
+        }
+
+        // Date Pickers
+        etStartDate.setOnClickListener(v -> {
+            Calendar calendar = Calendar.getInstance();
+            DatePickerDialog datePickerDialog = new DatePickerDialog(
+                    FuelRecordsActivity.this,
+                    (view, year, month, day) -> {
+                        String date = String.format("%02d/%02d/%d", day, month + 1, year);
+                        etStartDate.setText(date);
+                    },
+                    calendar.get(Calendar.YEAR),
+                    calendar.get(Calendar.MONTH),
+                    calendar.get(Calendar.DAY_OF_MONTH)
+            );
+            datePickerDialog.show();
+        });
+
+        etEndDate.setOnClickListener(v -> {
+            Calendar calendar = Calendar.getInstance();
+            DatePickerDialog datePickerDialog = new DatePickerDialog(
+                    FuelRecordsActivity.this,
+                    (view, year, month, day) -> {
+                        String date = String.format("%02d/%02d/%d", day, month + 1, year);
+                        etEndDate.setText(date);
+                    },
+                    calendar.get(Calendar.YEAR),
+                    calendar.get(Calendar.MONTH),
+                    calendar.get(Calendar.DAY_OF_MONTH)
+            );
+            datePickerDialog.show();
+        });
+
+        btnClearFilters.setOnClickListener(v -> {
+            filterVehicleId = null;
+            filterStartDate = null;
+            filterEndDate = null;
+            applyFilters();
+            Toast.makeText(this, "Filtros eliminados", Toast.LENGTH_SHORT).show();
+            dialog.dismiss();
+        });
+
+        btnCancel.setOnClickListener(v -> dialog.dismiss());
+
+        btnApply.setOnClickListener(v -> {
+            String selectedVehicle = spinnerVehicle.getText().toString().trim();
+            String startDate = etStartDate.getText().toString().trim();
+            String endDate = etEndDate.getText().toString().trim();
+
+            // Validar rango de fechas
+            if (!startDate.isEmpty() && !endDate.isEmpty()) {
+                if (!isValidDateRange(startDate, endDate)) {
+                    Toast.makeText(this, "La fecha de inicio debe ser anterior a la fecha de fin", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+            }
+
+            // Aplicar filtros
+            if (selectedVehicle.equals("Todos los vehículos")) {
+                filterVehicleId = null;
+            } else {
+                filterVehicleId = getVehicleIdFromName(selectedVehicle);
+            }
+
+            filterStartDate = startDate.isEmpty() ? null : startDate;
+            filterEndDate = endDate.isEmpty() ? null : endDate;
+
+            applyFilters();
+            Toast.makeText(this, "Filtros aplicados", Toast.LENGTH_SHORT).show();
+            dialog.dismiss();
+        });
+
+        dialog.show();
+    }
+
+    private void applyFilters() {
+        if (allFuelRecordList == null) {
+            allFuelRecordList = new ArrayList<>();
+        }
+
+        fuelRecordList.clear();
+
+        for (FuelRecord record : allFuelRecordList) {
+            boolean matchesVehicle = (filterVehicleId == null) || record.getVehicleId().equals(filterVehicleId);
+            boolean matchesStartDate = (filterStartDate == null) || isDateAfterOrEqual(record.getDate(), filterStartDate);
+            boolean matchesEndDate = (filterEndDate == null) || isDateBeforeOrEqual(record.getDate(), filterEndDate);
+
+            if (matchesVehicle && matchesStartDate && matchesEndDate) {
+                fuelRecordList.add(record);
+            }
+        }
+
+        fuelRecordAdapter.notifyDataSetChanged();
+        updateUI();
+    }
+
+    private boolean isValidDateRange(String startDate, String endDate) {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+        try {
+            Date start = sdf.parse(startDate);
+            Date end = sdf.parse(endDate);
+            return start != null && end != null && !start.after(end);
+        } catch (ParseException e) {
+            return false;
+        }
+    }
+
+    private boolean isDateAfterOrEqual(String date, String compareDate) {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+        try {
+            Date d1 = sdf.parse(date);
+            Date d2 = sdf.parse(compareDate);
+            return d1 != null && d2 != null && !d1.before(d2);
+        } catch (ParseException e) {
+            return false;
+        }
+    }
+
+    private boolean isDateBeforeOrEqual(String date, String compareDate) {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+        try {
+            Date d1 = sdf.parse(date);
+            Date d2 = sdf.parse(compareDate);
+            return d1 != null && d2 != null && !d1.after(d2);
+        } catch (ParseException e) {
+            return false;
+        }
     }
 
     private void updateUI() {

@@ -65,41 +65,49 @@
                 android:layout_marginTop="2dp" />
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
+                android:orientation="vertical"
                 android:layout_marginTop="8dp">
 
                 <Button
                     android:id="@+id/btn_generate_qr"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/qr_generado"
                     android:textSize="12sp"
                     android:backgroundTint="@color/primary"
                     style="@style/Widget.Material3.Button.TonalButton" />
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_edit_vehicle"
-                    style="@style/Widget.Material3.Button.IconButton"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:layout_marginStart="8dp"
-                    app:icon="@android:drawable/ic_menu_edit"
-                    app:iconTint="@color/primary"
-                    app:iconGravity="textStart"
-                    app:iconPadding="0dp" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="8dp">
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_delete_vehicle"
-                    style="@style/Widget.Material3.Button.IconButton"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:layout_marginStart="4dp"
-                    app:icon="@android:drawable/ic_menu_delete"
-                    app:iconTint="#F44336"
-                    app:iconGravity="textStart"
-                    app:iconPadding="0dp" />
+                    <Button
+                        android:id="@+id/btn_edit_vehicle"
+                        style="@style/Widget.Material3.Button.OutlinedButton"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Editar"
+                        android:textColor="@color/primary"
+                        app:strokeColor="@color/primary"
+                        android:layout_marginEnd="4dp" />
+
+                    <Button
+                        android:id="@+id/btn_delete_vehicle"
+                        style="@style/Widget.Material3.Button.OutlinedButton"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Borrar"
+                        android:textColor="#F44336"
+                        app:strokeColor="#F44336"
+                        android:layout_marginStart="4dp" />
+
+                </LinearLayout>
 
             </LinearLayout>
 
